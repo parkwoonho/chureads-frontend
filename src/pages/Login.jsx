@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import LoginButton from "../components/LoginButton";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ import { auth } from "../firebase";
 const Login = () => {
 // logic
 const history = useNavigate();
+const currentUSer = auth.currentUser;
+const isLoggedIn = !!currentUSer ;
 
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
@@ -24,6 +26,19 @@ const handleInputChange = (inputValue, field) => {
   }
 };
 
+  useEffect(() => {
+    // 페이지 진입시 딱 한번 실행
+    // TODO: 백엔드에 Get 요청
+    console.log("login useeffect 들어옴");
+    if(isLoggedIn){
+      alert("이미 로그인 되어 있습니다.");
+      history('/')      
+    }  
+
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
 const handleLogin = async (event) => {
   event.preventDefault(); // 폼 제출시 새로고침 방지 메소드
   // 로그인 기능
@@ -96,7 +111,7 @@ const handleLogin = async (event) => {
           {errorMessage &&<p className="text-red-600">
           {errorMessage}</p>}
 
-          <LoginButton category="login" text="Login" />
+          <LoginButton category="login" text="Login"/>
         </form>
         {/* END: 폼 영역 */}
         <div className="flex justify-center gap-1 py-6">
