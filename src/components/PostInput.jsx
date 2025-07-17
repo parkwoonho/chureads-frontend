@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { auth } from "../firebase";
 
 const PostInput = ({
   defaultValue = "",
@@ -8,6 +9,9 @@ const PostInput = ({
 }) => {
   // logic
   const textareaRef = useRef(null);
+
+  const currentUSer = auth.currentUser;
+  const API_BASE_URL=process.env.REACT_APP_API_BASE_URL
 
   const [value, setValue] = useState(defaultValue);
 

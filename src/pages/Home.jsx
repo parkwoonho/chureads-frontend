@@ -2,20 +2,27 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import Nav from "../components/layout/Nav";
 import FeedItem from "../components/FeedItem";
-import { initialFeedList, initialTags } from "../data/response";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 
+
 const Home = () => {
   // logic
+
   const history = useNavigate();
   const currentUSer = auth.currentUser;
+
+
+
   const isLoggedIn = !!currentUSer ;
+
+  const API_BASE_URL=process.env.REACT_APP_API_BASE_URL
+
   console.log("!!!", currentUSer );
   
 
 
-  const [feedList, setFeedList] = useState(initialFeedList);
+  const [feedList, setFeedList] = useState([]);
 
   const handleEdit = (data) => {
     history(`/edit/${data._id}`); // edit페이지로 이동
@@ -50,8 +57,28 @@ const Home = () => {
     // 페이지 진입시 딱 한번 실행
     // TODO: 백엔드에 Get 요청
 
+    const fetchPosts = async() => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/posts`)
+        if(!response.ok){
+          throw new Error(`Http error : status : ${response.status}`)
+        }
 
 
+        const result = await response.json()
+
+        setFeedList(result)
+        console.log("ddddddddddddddddd", result);
+      } catch (error) {
+        console.log("error : ", error)
+      }
+    }
+
+    fetchPosts();
+
+
+
+  // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -75,19 +102,17 @@ const Home = () => {
 
         <div>
           {/* START: 피드 영역 */}
-          <ul>
-            {feedList.map((feed) => (
+          {feedList.length ? <ul> {feedList.map((feed) => (
               <FeedItem
                 key={feed._id}
                 data={feed}
-                tags={initialTags}
-                isAuthor={true}
+                tags={feed.tags}
+                isAuthor={feed.userId === currentUSer.uid}
                 onDelete={handleDelete}
                 onEdit={handleEdit}
                 onLike={handleLike}
               />
-            ))}
-          </ul>
+            ))} </ul>: <p>NO DATA</p> }                                          
           {/* END: 피드 영역 */}
         </div>
       </main>
