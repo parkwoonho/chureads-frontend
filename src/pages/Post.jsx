@@ -11,6 +11,7 @@ const Post = () => {
   const currentUser = auth.currentUser;
 
   const [churead, setChuread] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (value) => {
     setChuread(value);
@@ -66,10 +67,12 @@ const Post = () => {
       // API 요청
       const result = await createPost(newItem)
       console.log("🚀 ~ result:", result)
-
+      
 
     } catch (error) {
       console.error("게시글 추가 에러:", error)
+    } finally{
+      setIsLoading(false)
     }
 
 
@@ -108,7 +111,10 @@ const Post = () => {
                 게시
               </button>
             </div>
+            {isLoading ? "LOADING": "END"}
             {/* END: 게시 버튼 영역 */}
+
+
           </form>
         </div>
       </main>
