@@ -5,6 +5,7 @@ import FeedItem from "../components/FeedItem";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { initialTags } from "../data/response";
+import useSSE from "../hooks/useSSE";
 
 
 const Home = () => {
@@ -21,9 +22,10 @@ const Home = () => {
 
   console.log("!!!", currentUSer );
   
-
-
   const [feedList, setFeedList] = useState([]);
+  const { isConnected } = useSSE();
+
+
 
   const handleEdit = (data) => {
     history(`/edit/${data._id}`); // edit페이지로 이동
@@ -58,6 +60,8 @@ const handleDelete = async (selectedItem) => {
   // UI 업데이트
   const filterList = feedList.filter((item) => item._id !== selectedItem._id);
   setFeedList(filterList);
+
+
 };
 
   const handleLike = (selectedId) => {
@@ -127,7 +131,11 @@ const handleDelete = async (selectedItem) => {
 
         <div>
           {/* START: 피드 영역 */}
-          {feedList.length ? <ul> {feedList.map((feed) => (
+          <span className="block p-2 text-right text-sm">
+            {isConnected ? "✔연결" : "😢연결해제" }
+          </span>
+          {feedList.length ? <ul> 
+            {feedList.map((feed) => (
               <FeedItem
                 key={feed._id}
                 data={feed}
